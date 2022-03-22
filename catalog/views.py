@@ -1,3 +1,4 @@
+from django.http import Http404
 from django.shortcuts import render
 
 # Create your views here.
@@ -20,3 +21,27 @@ def index(request):
         'index.html',
         context={'num_books':num_books,'num_instances':num_instances,'num_instances_available':num_instances_available,'num_authors':num_authors},
     )
+
+from django.views import generic
+
+class BookListView(generic.ListView):
+    model = Book
+    context_object_name = 'book_list'  # your own name for the list as a template variable
+    #queryset = Book.objects.filter(title__icontains="好")[:5]  # Get 5 books containing the title war
+    template_name = 'catalog/book_list.html'  # Specify your own template name/location
+    #分页设置
+    paginate_by = 5
+    # 优先级更高
+    # def get_queryset(self):
+    #     return Book.objects.filter(title__icontains='war')[:5]  # Get 5 books containing the title war
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get the context
+        context = super(BookListView, self).get_context_data(**kwargs)
+        # Create any data and add it to the context
+        context['some_data'] = 'This is just some data'
+        return context
+
+class BookDetailView(generic.DetailView):
+    """Generic class-based detail view for a book."""
+    model = Book
