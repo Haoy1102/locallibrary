@@ -21,5 +21,11 @@
         <li><strong>Copies available:</strong> {{ num_instances_available }}</li>
         <li><strong>Authors:</strong> {{ num_authors }}</li>
     </ul>
+    <p>你已经访问了这个网页{{ num_visits }}
+        {% if num_visits == 1 %} 次
+        {% else %} 次
+        {% endif %}.
+    </p>
+
 
 {% endblock %}
