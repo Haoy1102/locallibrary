@@ -2,6 +2,9 @@ from django.db import models
 
 # Create your models here.
 from django.db import models
+from django.contrib.auth.models import User
+from datetime import date
+
 
 class Genre(models.Model):
     """
@@ -79,6 +82,7 @@ class BookInstance(models.Model):
         if self.due_back and date.today() > self.due_back:
             return True
         return False
+
 
     LOAN_STATUS = (
         ('m', 'Maintenance'),

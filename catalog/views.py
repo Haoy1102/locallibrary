@@ -1,9 +1,12 @@
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import Http404
 from django.shortcuts import render
 
 # Create your views here.
 from .models import Book, Author, BookInstance, Genre
 
+#@login_required #增加注解可以限制必须登陆后才可以查看
 def index(request):
     """
     View function for home page of site.
@@ -30,7 +33,11 @@ def index(request):
 
 from django.views import generic
 
-class BookListView(generic.ListView):
+
+class BookListView(LoginRequiredMixin,generic.ListView):
+    #设置登录URL和重定向
+    # login_url ='/accounts/login/'
+    # redirect_field_name = '/catalog/'
     model = Book
     context_object_name = 'book_list'  # your own name for the list as a template variable
     #queryset = Book.objects.filter(title__icontains="好")[:5]  # Get 5 books containing the title war
@@ -60,3 +67,14 @@ class AuthorListView(generic.ListView):
 class AuthorDetailView(generic.DetailView):
     model = Author
 
+
+class LoanedBooksByUserListView(PermissionRequiredMixin,LoginRequiredMixin,generic.ListView):
+    """Generic class-based view listing books on loan to current user."""
+    permission_required = 'catalog.can_mark_returned'
+    # Or multiple permissions
+    model = BookInstance
+    template_name ='catalog/bookinstance_list_borrowed_user.html'
+    paginate_by = 10
+
+    def get_queryset(self):
+        return BookInstance.objects.filter(borrower=self.request.user).filter(status__exact='o').order_by('due_back')
