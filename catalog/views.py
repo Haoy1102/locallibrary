@@ -63,14 +63,14 @@ class AuthorListView(generic.ListView):
     model = Author
     context_object_name = "author_list"
     template_name = 'catalog/author_list.html'
+    paginate_by = 5
 
 class AuthorDetailView(generic.DetailView):
     model = Author
 
 
-class LoanedBooksByUserListView(PermissionRequiredMixin,LoginRequiredMixin,generic.ListView):
+class LoanedBooksByUserListView(LoginRequiredMixin,generic.ListView):
     """Generic class-based view listing books on loan to current user."""
-    permission_required = 'catalog.can_mark_returned'
     # Or multiple permissions
     model = BookInstance
     template_name ='catalog/bookinstance_list_borrowed_user.html'
@@ -100,6 +100,7 @@ from catalog.forms import RenewBookForm
 @login_required
 @permission_required('catalog.can_mark_returned',raise_exception=True)
 def renew_book_librarian(request, pk):
+    """View function for renewing a specific BookInstance by librarian."""
     book_instance = get_object_or_404(BookInstance, pk=pk)
 
     # If this is a POST request then process the Form data
@@ -136,7 +137,7 @@ from .models import Author
 class AuthorCreate(PermissionRequiredMixin,CreateView):
     model = Author
     fields = ['first_name', 'last_name', 'date_of_birth', 'date_of_death']
-    initial={'date_of_death':'05/01/2018',}
+    initial={'date_of_death':'2022/4/22',}
     permission_required = 'catalog.can_mark_returned'
 
 class AuthorUpdate(PermissionRequiredMixin,UpdateView):
